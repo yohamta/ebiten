@@ -106,6 +106,10 @@ func Wheel() (xoff, yoff float64) {
 	return uiDriver().Input().Wheel()
 }
 
+func WheelDelta() (xoff, yoff float64) {
+	return uiDriver().Input().WheelDelta()
+}
+
 // IsMouseButtonPressed returns a boolean indicating whether mouseButton is pressed.
 //
 // If you want to know whether the mouseButton started being pressed in the current frame,

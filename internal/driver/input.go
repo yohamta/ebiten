@@ -37,4 +37,5 @@ type Input interface {
 	StandardGamepadButtonValue(id GamepadID, button StandardGamepadButton) float64
 	TouchPosition(id TouchID) (x, y int)
 	Wheel() (xoff, yoff float64)
+	WheelDelta() (xoff, yoff float64)
 }

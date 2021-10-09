@@ -195,6 +195,10 @@ func (i *Input) Wheel() (xoff, yoff float64) {
 	return 0, 0
 }
 
+func (i *Input) WheelDelta() (xoff, yoff float64) {
+	return 0, 0
+}
+
 func (i *Input) IsMouseButtonPressed(key driver.MouseButton) bool {
 	return false
 }

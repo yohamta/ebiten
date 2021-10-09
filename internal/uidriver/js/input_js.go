@@ -245,6 +245,10 @@ func (i *Input) Wheel() (xoff, yoff float64) {
 	return i.wheelX, i.wheelY
 }
 
+func (i *Input) WheelDelta() (xoff, yoff float64) {
+	return i.wheelX, i.wheelY
+}
+
 func (i *Input) keyDown(code js.Value) {
 	if i.keyPressed == nil {
 		i.keyPressed = map[int]bool{}

@@ -194,3 +194,5 @@ func (u *UserInterface) adjustViewSize() {
 
 func initializeWindowAfterCreation(w *glfw.Window) {
 }
+
+const wheelFactor = 10

@@ -260,6 +260,16 @@ func (i *Input) Wheel() (xoff, yoff float64) {
 	return i.scrollX, i.scrollY
 }
 
+func (i *Input) WheelDelta() (xoff, yoff float64) {
+	if !i.ui.isRunning() {
+		return 0, 0
+	}
+
+	i.ui.m.RLock()
+	defer i.ui.m.RUnlock()
+	return i.scrollX * wheelFactor, i.scrollY * wheelFactor
+}
+
 var glfwMouseButtonToMouseButton = map[glfw.MouseButton]driver.MouseButton{
 	glfw.MouseButtonLeft:   driver.MouseButtonLeft,
 	glfw.MouseButtonRight:  driver.MouseButtonRight,

@@ -43,7 +43,7 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	dx, dy := ebiten.Wheel()
+	dx, dy := ebiten.WheelDelta()
 	g.x += dx
 	g.y += dy
 	return nil
