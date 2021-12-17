@@ -98,4 +98,7 @@
 // Embedding a DLL and extracting it on the fly might be problematic on Windows since the application might be
 // unexpectedly recognized as a virus by some virus checkers.
 // `ebitenexternaldll` is useful for such cases. See #1832 for the discussion.
+//
+// `ebitencbackend` uses a backend in C. This is intended to be used with `-buildmode=c-archive`.
+// The user has to implement necessary functions in C.
 package ebiten
