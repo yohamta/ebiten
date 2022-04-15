@@ -572,7 +572,6 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     _glfwInitTimerWin32();
-    _glfwInitJoysticksWin32();
 
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;
@@ -597,8 +596,6 @@ void _glfwPlatformTerminate(void)
     free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();
-
-    _glfwTerminateJoysticksWin32();
 
     freeLibraries();
 }

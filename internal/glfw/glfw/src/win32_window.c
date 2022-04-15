@@ -523,24 +523,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             case WM_DISPLAYCHANGE:
                 _glfwPollMonitorsWin32();
                 break;
-
-            case WM_DEVICECHANGE:
-            {
-                if (wParam == DBT_DEVICEARRIVAL)
-                {
-                    DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
-                    if (dbh && dbh->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
-                        _glfwDetectJoystickConnectionWin32();
-                }
-                else if (wParam == DBT_DEVICEREMOVECOMPLETE)
-                {
-                    DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
-                    if (dbh && dbh->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
-                        _glfwDetectJoystickDisconnectionWin32();
-                }
-
-                break;
-            }
         }
 
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);

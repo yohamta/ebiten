@@ -242,8 +242,6 @@ GLFWAPI int glfwInit(void)
 
     _glfwPlatformSetTls(&_glfw.errorSlot, &_glfwMainThreadError);
 
-    _glfwInitGamepadMappings();
-
     _glfw.initialized = GLFW_TRUE;
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
@@ -263,9 +261,6 @@ GLFWAPI void glfwInitHint(int hint, int value)
 {
     switch (hint)
     {
-        case GLFW_JOYSTICK_HAT_BUTTONS:
-            _glfwInitHints.hatButtons = value;
-            return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;
