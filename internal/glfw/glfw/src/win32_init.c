@@ -597,7 +597,6 @@ void _glfwPlatformTerminate(void)
     free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();
-    _glfwTerminateEGL();
 
     _glfwTerminateJoysticksWin32();
 

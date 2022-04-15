@@ -1406,20 +1406,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
-        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
-        {
-            if (!_glfwInitEGL())
-                return GLFW_FALSE;
-            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
-                return GLFW_FALSE;
-        }
-        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
-        {
-            if (!_glfwInitOSMesa())
-                return GLFW_FALSE;
-            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
-                return GLFW_FALSE;
-        }
     }
 
     if (window->monitor)
@@ -2218,67 +2204,6 @@ const char* _glfwPlatformGetClipboardString(void)
     CloseClipboard();
 
     return _glfw.win32.clipboardString;
-}
-
-void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
-{
-    if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_win32_surface)
-        return;
-
-    extensions[0] = "VK_KHR_surface";
-    extensions[1] = "VK_KHR_win32_surface";
-}
-
-int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
-                                                      VkPhysicalDevice device,
-                                                      uint32_t queuefamily)
-{
-    PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR
-        vkGetPhysicalDeviceWin32PresentationSupportKHR =
-        (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)
-        vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
-    if (!vkGetPhysicalDeviceWin32PresentationSupportKHR)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "Win32: Vulkan instance missing VK_KHR_win32_surface extension");
-        return GLFW_FALSE;
-    }
-
-    return vkGetPhysicalDeviceWin32PresentationSupportKHR(device, queuefamily);
-}
-
-VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
-                                          _GLFWwindow* window,
-                                          const VkAllocationCallbacks* allocator,
-                                          VkSurfaceKHR* surface)
-{
-    VkResult err;
-    VkWin32SurfaceCreateInfoKHR sci;
-    PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
-
-    vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)
-        vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR");
-    if (!vkCreateWin32SurfaceKHR)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "Win32: Vulkan instance missing VK_KHR_win32_surface extension");
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
-    memset(&sci, 0, sizeof(sci));
-    sci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    sci.hinstance = GetModuleHandle(NULL);
-    sci.hwnd = window->win32.handle;
-
-    err = vkCreateWin32SurfaceKHR(instance, &sci, allocator, surface);
-    if (err)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to create Vulkan surface: %s",
-                        _glfwGetVulkanResultString(err));
-    }
-
-    return err;
 }
 
 

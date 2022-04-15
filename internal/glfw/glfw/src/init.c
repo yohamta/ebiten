@@ -87,7 +87,6 @@ static void terminate(void)
     _glfw.mappings = NULL;
     _glfw.mappingCount = 0;
 
-    _glfwTerminateVulkan();
     _glfwPlatformTerminate();
 
     _glfw.initialized = GLFW_FALSE;
