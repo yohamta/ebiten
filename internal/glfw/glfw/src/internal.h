@@ -71,7 +71,6 @@ typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWmapelement  _GLFWmapelement;
-typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
 
@@ -111,73 +110,6 @@ typedef void (APIENTRY * PFNGLCLEARPROC)(GLbitfield);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
 typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
-
-#define VK_NULL_HANDLE 0
-
-typedef void* VkInstance;
-typedef void* VkPhysicalDevice;
-typedef uint64_t VkSurfaceKHR;
-typedef uint32_t VkFlags;
-typedef uint32_t VkBool32;
-
-typedef enum VkStructureType
-{
-    VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR = 1000004000,
-    VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR = 1000005000,
-    VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR = 1000006000,
-    VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
-    VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK = 1000123000,
-    VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT = 1000217000,
-    VK_STRUCTURE_TYPE_MAX_ENUM = 0x7FFFFFFF
-} VkStructureType;
-
-typedef enum VkResult
-{
-    VK_SUCCESS = 0,
-    VK_NOT_READY = 1,
-    VK_TIMEOUT = 2,
-    VK_EVENT_SET = 3,
-    VK_EVENT_RESET = 4,
-    VK_INCOMPLETE = 5,
-    VK_ERROR_OUT_OF_HOST_MEMORY = -1,
-    VK_ERROR_OUT_OF_DEVICE_MEMORY = -2,
-    VK_ERROR_INITIALIZATION_FAILED = -3,
-    VK_ERROR_DEVICE_LOST = -4,
-    VK_ERROR_MEMORY_MAP_FAILED = -5,
-    VK_ERROR_LAYER_NOT_PRESENT = -6,
-    VK_ERROR_EXTENSION_NOT_PRESENT = -7,
-    VK_ERROR_FEATURE_NOT_PRESENT = -8,
-    VK_ERROR_INCOMPATIBLE_DRIVER = -9,
-    VK_ERROR_TOO_MANY_OBJECTS = -10,
-    VK_ERROR_FORMAT_NOT_SUPPORTED = -11,
-    VK_ERROR_SURFACE_LOST_KHR = -1000000000,
-    VK_SUBOPTIMAL_KHR = 1000001003,
-    VK_ERROR_OUT_OF_DATE_KHR = -1000001004,
-    VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = -1000003001,
-    VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = -1000000001,
-    VK_ERROR_VALIDATION_FAILED_EXT = -1000011001,
-    VK_RESULT_MAX_ENUM = 0x7FFFFFFF
-} VkResult;
-
-typedef struct VkAllocationCallbacks VkAllocationCallbacks;
-
-typedef struct VkExtensionProperties
-{
-    char            extensionName[256];
-    uint32_t        specVersion;
-} VkExtensionProperties;
-
-typedef void (APIENTRY * PFN_vkVoidFunction)(void);
-
-#if defined(_GLFW_VULKAN_STATIC)
-  PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance,const char*);
-  VkResult vkEnumerateInstanceExtensionProperties(const char*,uint32_t*,VkExtensionProperties*);
-#else
-  typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-  typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
-  #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
-  #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
-#endif
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
@@ -449,26 +381,6 @@ struct _GLFWcursor
     _GLFW_PLATFORM_CURSOR_STATE;
 };
 
-// Gamepad mapping element structure
-//
-struct _GLFWmapelement
-{
-    uint8_t         type;
-    uint8_t         index;
-    int8_t          axisScale;
-    int8_t          axisOffset;
-};
-
-// Gamepad mapping structure
-//
-struct _GLFWmapping
-{
-    char            name[128];
-    char            guid[33];
-    _GLFWmapelement buttons[15];
-    _GLFWmapelement axes[6];
-};
-
 // Thread local storage structure
 //
 struct _GLFWtls
@@ -506,9 +418,6 @@ struct _GLFWlibrary
     _GLFWmonitor**      monitors;
     int                 monitorCount;
 
-    _GLFWmapping*       mappings;
-    int                 mappingCount;
-
     _GLFWtls            errorSlot;
     _GLFWtls            contextSlot;
     _GLFWmutex          errorLock;
@@ -518,28 +427,6 @@ struct _GLFWlibrary
         // This is defined in the platform's time.h
         _GLFW_PLATFORM_LIBRARY_TIMER_STATE;
     } timer;
-
-    struct {
-        GLFWbool        available;
-        void*           handle;
-        char*           extensions[2];
-#if !defined(_GLFW_VULKAN_STATIC)
-        PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
-        PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
-#endif
-        GLFWbool        KHR_surface;
-#if defined(_GLFW_WIN32)
-        GLFWbool        KHR_win32_surface;
-#elif defined(_GLFW_COCOA)
-        GLFWbool        MVK_macos_surface;
-        GLFWbool        EXT_metal_surface;
-#elif defined(_GLFW_X11)
-        GLFWbool        KHR_xlib_surface;
-        GLFWbool        KHR_xcb_surface;
-#elif defined(_GLFW_WAYLAND)
-        GLFWbool        KHR_wayland_surface;
-#endif
-    } vk;
 
     struct {
         GLFWmonitorfun  monitor;
@@ -590,8 +477,6 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 void _glfwPlatformSetClipboardString(const char* string);
 const char* _glfwPlatformGetClipboardString(void);
-
-void _glfwPlatformUpdateGamepadGUID(char* guid);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
@@ -646,13 +531,6 @@ void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
-int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
-                                                      VkPhysicalDevice device,
-                                                      uint32_t queuefamily);
-VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
-                                          _GLFWwindow* window,
-                                          const VkAllocationCallbacks* allocator,
-                                          VkSurfaceKHR* surface);
 
 GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
 void _glfwPlatformDestroyTls(_GLFWtls* tls);
@@ -723,12 +601,7 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
-void _glfwInitGamepadMappings(void);
 void _glfwCenterCursorInContentArea(_GLFWwindow* window);
-
-GLFWbool _glfwInitVulkan(int mode);
-void _glfwTerminateVulkan(void);
-const char* _glfwGetVulkanResultString(VkResult result);
 
 char* _glfw_strdup(const char* source);
 float _glfw_fminf(float a, float b);

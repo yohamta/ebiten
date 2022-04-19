@@ -83,10 +83,6 @@ static void terminate(void)
     _glfw.monitors = NULL;
     _glfw.monitorCount = 0;
 
-    free(_glfw.mappings);
-    _glfw.mappings = NULL;
-    _glfw.mappingCount = 0;
-
     _glfwPlatformTerminate();
 
     _glfw.initialized = GLFW_FALSE;

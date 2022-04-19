@@ -66,8 +66,6 @@
 
 #include <wctype.h>
 #include <windows.h>
-#include <dinput.h>
-#include <xinput.h>
 #include <dbt.h>
 
 // HACK: Define macros that some windows.h variants don't
@@ -184,50 +182,6 @@ typedef enum
 #define _glfwIsWindows10CreatorsUpdateOrGreaterWin32() \
     _glfwIsWindows10BuildOrGreaterWin32(15063)
 
-// HACK: Define macros that some xinput.h variants don't
-#ifndef XINPUT_CAPS_WIRELESS
- #define XINPUT_CAPS_WIRELESS 0x0002
-#endif
-#ifndef XINPUT_DEVSUBTYPE_WHEEL
- #define XINPUT_DEVSUBTYPE_WHEEL 0x02
-#endif
-#ifndef XINPUT_DEVSUBTYPE_ARCADE_STICK
- #define XINPUT_DEVSUBTYPE_ARCADE_STICK 0x03
-#endif
-#ifndef XINPUT_DEVSUBTYPE_FLIGHT_STICK
- #define XINPUT_DEVSUBTYPE_FLIGHT_STICK 0x04
-#endif
-#ifndef XINPUT_DEVSUBTYPE_DANCE_PAD
- #define XINPUT_DEVSUBTYPE_DANCE_PAD 0x05
-#endif
-#ifndef XINPUT_DEVSUBTYPE_GUITAR
- #define XINPUT_DEVSUBTYPE_GUITAR 0x06
-#endif
-#ifndef XINPUT_DEVSUBTYPE_DRUM_KIT
- #define XINPUT_DEVSUBTYPE_DRUM_KIT 0x08
-#endif
-#ifndef XINPUT_DEVSUBTYPE_ARCADE_PAD
- #define XINPUT_DEVSUBTYPE_ARCADE_PAD 0x13
-#endif
-#ifndef XUSER_MAX_COUNT
- #define XUSER_MAX_COUNT 4
-#endif
-
-// HACK: Define macros that some dinput.h variants don't
-#ifndef DIDFT_OPTIONAL
- #define DIDFT_OPTIONAL 0x80000000
-#endif
-
-// xinput.dll function pointer typedefs
-typedef DWORD (WINAPI * PFN_XInputGetCapabilities)(DWORD,DWORD,XINPUT_CAPABILITIES*);
-typedef DWORD (WINAPI * PFN_XInputGetState)(DWORD,XINPUT_STATE*);
-#define XInputGetCapabilities _glfw.win32.xinput.GetCapabilities
-#define XInputGetState _glfw.win32.xinput.GetState
-
-// dinput8.dll function pointer typedefs
-typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
-#define DirectInput8Create _glfw.win32.dinput8.Create
-
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
@@ -261,20 +215,6 @@ typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,
 // ntdll.dll function pointer typedefs
 typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLONG);
 #define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
-
-typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
-
-typedef struct VkWin32SurfaceCreateInfoKHR
-{
-    VkStructureType                 sType;
-    const void*                     pNext;
-    VkWin32SurfaceCreateFlagsKHR    flags;
-    HINSTANCE                       hinstance;
-    HWND                            hwnd;
-} VkWin32SurfaceCreateInfoKHR;
-
-typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
-typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
 #include "wgl_context.h"
 
@@ -342,18 +282,6 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
-
-    struct {
-        HINSTANCE                       instance;
-        PFN_DirectInput8Create          Create;
-        IDirectInput8W*                 api;
-    } dinput8;
-
-    struct {
-        HINSTANCE                       instance;
-        PFN_XInputGetCapabilities       GetCapabilities;
-        PFN_XInputGetState              GetState;
-    } xinput;
 
     struct {
         HINSTANCE                       instance;
